@@ -3,7 +3,6 @@ import json
 import os
 import logging
 from dotenv import load_dotenv
-from discord.ext import commands
 
 # setup logger
 logger = logging.getLogger("discord")
@@ -21,7 +20,7 @@ TOKEN = os.getenv("TOKEN") or ""
 f = open("config.json")
 data = json.load(f)
 f.close()
-key_words: list[str] = data["key_words"]
+key_words: dict[str, str] = data["key_words"]
 
 
 class MyClient(discord.Client):
@@ -29,11 +28,11 @@ class MyClient(discord.Client):
         logging.info(msg=f"Logged on as {self.user}")
 
     async def on_message(self, message):
-        if message.author == self.user:
+        if message.author == self.user or message.author.bot == True:
             return
-        if message.content.strip().lower() in key_words:
+        if message.content.strip().lower() in key_words.keys():
             logging.info(msg=f"Message from {message.author}: {message.content}")
-            await message.channel.send(f"{message.content.strip().lower()}")
+            await message.channel.send(f"{key_words[message.content.strip().lower()]}")
 
 
 def main():
