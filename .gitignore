@@ -1,3 +1,4 @@
 env/
 .env
 fly.toml
+__pycache__
