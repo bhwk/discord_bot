@@ -5,7 +5,6 @@ import logging
 from pathlib import Path
 from dotenv import load_dotenv
 
-
 from discord.ext import commands
 
 # setup logger
@@ -37,7 +36,7 @@ class customBot(commands.Bot):
     async def on_ready(self) -> None:
         logging.info(f"Logged on as {self.user} | {self.user.id}")
 
-    async def on_message(self, message):
+    async def on_message(self, message: discord.Message):
         if message.author == self.user or message.author.bot == True:
             return
         if message.content.strip().lower() in key_words.keys():
