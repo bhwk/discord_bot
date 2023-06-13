@@ -53,7 +53,7 @@ class Music(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(aliases=["play"])
+    @commands.command()
     async def yt(self, ctx: commands.Context, *, url):
         async with ctx.typing():
             player = await YTDLSource.from_url(url, loop=self.bot.loop)

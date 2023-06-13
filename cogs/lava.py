@@ -24,7 +24,7 @@ class Lava(commands.Cog):
             await vc.play(track)
         else:
             await vc.put_wait(track)
-            await ctx.send(f"Queued: {track.title}")
+            await vc.channel.send(f"Queued: {track.title}")
 
     @commands.Cog.listener()
     async def on_wavelink_track_start(self, player: Player, track: Track):
