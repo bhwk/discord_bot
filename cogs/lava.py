@@ -2,8 +2,6 @@ import discord
 from discord.ext import commands
 import asyncio
 import wavelink
-from wavelink.node import Player
-from wavelink.types.track import Track
 
 
 class Lava(commands.Cog):
@@ -27,13 +25,13 @@ class Lava(commands.Cog):
             await vc.channel.send(f"Queued: {track.title}")
 
     @commands.Cog.listener()
-    async def on_wavelink_track_start(self, player: Player, track: Track):
-        vc: wavelink.Player = player.guild.voice_client
-        vc.channel.send(content=f"Now playing: {track}")
+    async def on_wavelink_track_start(self, payload: wavelink.TrackEventPayload):
+        vc: wavelink.Player = payload.player
+        vc.channel.send(content=f"Now playing: {payload.track.title}")
 
     @commands.Cog.listener()
-    async def on_wavelink_track_end(self, player: Player, track: Track):
-        vc: wavelink.Player = player.guild.voice_client
+    async def on_wavelink_track_end(self, payload: wavelink.TrackEventPayload):
+        vc: wavelink.Player = payload.player
         if vc.queue.is_empty:
             return
         track = await vc.queue.get_wait()
