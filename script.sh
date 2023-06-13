@@ -1,7 +1,8 @@
-
 java -jar ./Lavalink.jar &
 
-python3 ./main.py 
+sleep 10
+
+python3 ./main.py &
 
 wait -n
 
