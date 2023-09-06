@@ -64,7 +64,8 @@ class customBot(commands.Bot):
         if links:
             logging.info(msg=f"Links detected: {links}")
             await message.channel.send(
-                f"Links detected:\n" + "\n".join([str(x) for x in links])
+                f"Links detected:\n"
+                + "\n".join([str(x).replace("'", "") for x in links])
             )
 
         await bot.process_commands(message)
