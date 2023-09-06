@@ -2,10 +2,15 @@ import discord
 import json
 import os
 import logging
+import re
 from pathlib import Path
 from dotenv import load_dotenv
-
 from discord.ext import commands
+
+
+INLINE_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+FOOTNOTE_LINK_TEXT_RE = re.compile(r"\[([^\]]+)\]\[(\d+)\]")
+FOOTNOTE_LINK_URL_RE = re.compile(r"\[(\d+)\]:\s+(\S+)")
 
 # setup logger
 logger = logging.getLogger("discord")
@@ -33,6 +38,18 @@ class customBot(commands.Bot):
             intents=intents, command_prefix=commands.when_mentioned_or("$")
         )
 
+    def find_md_links(self, md):
+        """Return dict of links in markdown"""
+
+        links = list(INLINE_LINK_RE.findall(md))
+        footnote_links = dict(FOOTNOTE_LINK_TEXT_RE.findall(md))
+        footnote_urls = dict(FOOTNOTE_LINK_URL_RE.findall(md))
+
+        for key in footnote_links.keys():
+            links.append((footnote_links[key], footnote_urls[footnote_links[key]]))
+
+        return links
+
     async def on_ready(self) -> None:
         logging.info(f"Logged on as {self.user} | {self.user.id}")
 
@@ -42,6 +59,13 @@ class customBot(commands.Bot):
         if message.content.strip().lower() in key_words.keys():
             logging.info(msg=f"Message from {message.author}: {message.content}")
             await message.channel.send(f"{key_words[message.content.strip().lower()]}")
+
+        links = self.find_md_links(message.content.strip())
+        if links:
+            logging.info(msg=f"Links detected: {links}")
+            await message.channel.send(
+                f"Links detected:\n" + "\n".join([str(x) for x in links])
+            )
 
         await bot.process_commands(message)
 
